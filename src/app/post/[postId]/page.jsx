@@ -2,8 +2,25 @@ import { CommentForm } from "@/components/CommentForm";
 import { CommentList } from "@/components/CommentList";
 import { Vote } from "@/components/Vote";
 import { db } from "@/db";
+import { notFound } from "next/navigation";
+import { auth } from "@/auth";
+
+export async function generateMetadata({ params }) {
+  const post = await db.query(`SELECT * FROM posts WHERE id=${params.postId};`);
+  const data = post.rows[0];
+  if (!data) {
+    throw new Error("This post does not exist");
+  }
+  //I am returning a metadata object
+  return {
+    title: `Didit - ${data.title}`,
+    description: `${data.body}`,
+  };
+}
 
 export default async function SinglePostPage({ params }) {
+  const session = await auth();
+  const userId = session?.user?.id;
   const postId = params.postId;
 
   const { rows: posts } = await db.query(

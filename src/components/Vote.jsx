@@ -8,7 +8,7 @@ async function getExistingVote(userId, postId) {
     "SELECT * FROM votes WHERE user_id = $1 AND post_id = $2 LIMIT 1",
     [userId, postId]
   );
-
+  console.log("existing vote", existingVotes?.[0]);
   return existingVotes?.[0];
 }
 
@@ -23,7 +23,7 @@ async function handleVote(userId, postId, newVote) {
   if (existingVote) {
     if (existingVote.vote === newVote) {
       // User is toggling their vote, so remove it
-      await db.query("DELETE FROM votes WHERE id = $1", [existingVote.id]);
+      // await db.query("DELETE FROM votes WHERE id = $1", [existingVote.id]);
     } else {
       // Update the existing vote
       await db.query("UPDATE votes SET vote = $1 WHERE id = $2", [

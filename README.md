@@ -1,48 +1,40 @@
-## Upvote
+### What is the objective?
 
-Upvote is a Reddit-esque web application that allows users to create posts, upvote and downvote posts, and comment on posts in a multi-threaded, nested list.
+You've been asked to join an existing project team that is working on a prototype Reddit-style application. The project is in the early stages and the team is looking for someone to help flesh out the features and fix some of the issues with the prototype code base.
 
-The project is built using Next.js with the /app router and [Tailwind CSS](https://tailwindcss.com/), and uses [Auth.js (formerly Next Auth)](https://authjs.dev/) for user authentication. The data is stored in a Postgres database, which is created and accessed with raw SQL queries using the `pg` package.
+### Requirements
 
-The project is a work in progress and is not yet complete.
+- 🎯 Deploy to Vercel - done
 
-## Features
+### Fixes & Feature Requests (Stretch goals)
 
-- [x] View a list of posts
-- [x] View a single post
-- [x] Create a post
-- [x] Upvote and downvote posts
-- [x] Pagination of posts
-- [x] Comment on posts
-- [x] Nested comments (recursive lists)
-- [x] User authentication
+- Fix page titles on post pages to match the post title - done
+- Handle the error when you click to vote while not logged in to show a nice error message - done
+- Try to make it so I can't vote more than once (Fix could be done in the SQL with the constraints (ideally), or in-app code to check the db before adding a new row to the votes table) - maybe
+- Users can vote an infinite number of times on the same post. We'd like to prevent this happening. It should be enforced at the Schema level with the UNIQUE constraint but it isn't working. We'd like you to try and fix this, either by correcting the schema (preferable) or if not by implementing the restriction in the application code when the user tries to upvote. - maybe
+- There are more potential stretch goals to choose from in the ReadMe - look at the future features if you are all done and twiddling your thumbs or you want to challenge yourself further.
 
-## Setup instructions
+### What went well
 
-1. Fork the repository (check "copy the main branch only") and clone your fork to your local machine
-2. Run `npm install`
-3. Create a `.env.local` file in the root directory and add the following environment variables:
-   - `DATABASE_URL` - the URL of your Postgres database (eg. the Supabase connection string)
-   - `AUTH_SECRET` - the Next Auth secret string (this can be anything at all like a password, but keep it secret!)
-   - `AUTH_GITHUB_ID` - the GitHub OAuth client ID (create yours in [Github developer settings](https://github.com/settings/developers)
-   - `AUTH_GITHUB_SECRET` - the GitHub OAuth client secret (create this in [Github developer settings](https://github.com/settings/developers))
-4. Create the database schema by running the SQL commands in `schema.sql` in your database (eg. by running the commands in Supabase Query Editor)
-5. Run `npm run dev` to start the development server
-6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the site
+The goal for the assignment was to deploy a functional app to Vercel, which i managed to do fairly early thankfully. Shaun's video on gitHub Auth and README was very useful. I did have to amend one of the SQL create table queries to get it to work.
 
-## Potential future features
+Implementing page titles on post pages was done by adding Metadata
+I added a global error page to handle both posts that don't exist and also the issue of voting when not logged in.
 
-- [ ] User profiles
-- [ ] Sorting posts by recent (date posted), top (most upvotes), and most controversial (most upvotes _and_ downvotes)
-- [ ] User karma scores
-- [ ] User badges / trophies (awards for achievements like number of posts, years on the site, etc.)
-- [ ] User settings (eg. number of posts per page, theme, etc.)
-- [ ] Moderation tools / reporting or flagging objectionable comments for removable by admins
-- [ ] Searching posts (possibly using simple SQL LIKE '%some search%', or [Postgres text search](https://www.crunchydata.com/blog/postgres-full-text-search-a-search-engine-in-a-database))
-- [ ] Subreddits (separate communities, that isn't just one big list of posts, that can be created by users)
-- [ ] User notifications
-- [ ] User private messaging
-- [ ] User blocking
-- [ ] User following
-- [ ] User feed (posts from users you follow)
-- [ ] User flair
+### What I found difficult/interesting
+
+Well firstly its an incredibly complex schema, it took me a while to get my head around it.
+
+![Schema](./screenshots/didit-schema2.png)
+
+In addition, the actual app is fairly sophisticated, the Voting component took me a couple of hours to start to understand it - i think i do now, at least somewhat.
+
+In the Vote.jsx component there is a function called handleVote(userId, postId, newVote). newVote is simply the value of the new vote (a +1 or -1 value).
+In the function there is a long if statement. The first part of that checked if the existing vote value was the same as the new vote value and deleted the vote entry from the votes table if that was the case. This led to the vote number oscillating between +1 and 0 if you kept pressing upvote - not what is desired.
+I commented out the delete statement as it seemed unnecessary (line 26 in my code). Now if you keep clicking upvote the vote count goes to +1 and stays there. I think this is whats needed.
+
+My solution does seem too simple so i suspect i could be missing a leap of logic somewhere. Please enlighten me if that is the case.
+
+### Sources I used
+
+actually just moodle and past workshops

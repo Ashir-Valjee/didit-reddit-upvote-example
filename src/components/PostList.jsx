@@ -3,6 +3,7 @@ import { Pagination } from "./Pagination";
 import { Vote } from "./Vote";
 import { db } from "@/db";
 import { POSTS_PER_PAGE } from "@/config";
+import { auth } from "@/auth";
 
 export async function PostList({ currentPage = 1 }) {
   const { rows: posts } =
@@ -15,6 +16,10 @@ export async function PostList({ currentPage = 1 }) {
      ORDER BY vote_total DESC
      LIMIT ${POSTS_PER_PAGE}
      OFFSET ${POSTS_PER_PAGE * (currentPage - 1)}`);
+
+  const session = await auth();
+  const userId = session?.user?.id;
+  console.log(userId);
 
   return (
     <>
